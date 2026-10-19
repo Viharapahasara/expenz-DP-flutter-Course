@@ -1,8 +1,9 @@
 import 'package:expenz/constants/colors.dart';
+import 'package:expenz/page/home.dart';
 
 import 'package:expenz/screen/onboard/widget/custombutton.dart';
+import 'package:expenz/services/user_service.dart';
 import 'package:flutter/material.dart';
-
 
 class UserdataScreen extends StatefulWidget {
   const UserdataScreen({super.key});
@@ -12,8 +13,7 @@ class UserdataScreen extends StatefulWidget {
 }
 
 class _UserdataScreenState extends State<UserdataScreen> {
-
-  //For the check box 
+  //For the check box
   bool _rememberME = false;
 
   //Form key for the validations
@@ -23,11 +23,11 @@ class _UserdataScreenState extends State<UserdataScreen> {
   final TextEditingController _UserNameController = TextEditingController();
   final TextEditingController _EmailController = TextEditingController();
   final TextEditingController _PasswordController = TextEditingController();
-  final TextEditingController _ConformPasswordController = TextEditingController();
-  
-  @override
+  final TextEditingController _ConformPasswordController =
+      TextEditingController();
 
-  void dispose(){
+  @override
+  void dispose() {
     _UserNameController.dispose();
     _EmailController.dispose();
     _PasswordController.dispose();
@@ -35,166 +35,182 @@ class _UserdataScreenState extends State<UserdataScreen> {
 
     super.dispose();
   }
+
   Widget build(BuildContext context) {
     return Scaffold(
-    
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 50,horizontal: 15),
+          padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-          
-              Text("Enter your \nPersonal Details",
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight(800)
-              ),),
-            
-              SizedBox(height: 50,),
-            
+              Text(
+                "Enter your \nPersonal Details",
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight(800)),
+              ),
+
+              SizedBox(height: 50),
+
               Form(
                 key: _formKey,
                 child: Column(
-                
-                children: [
-            
-                  //get name
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: _UserNameController,
-                      validator: (value) {
-                        //check weather the user entered a valid user name
-                        if(value!.isEmpty){
-                          return "Please Enter Your Name";
-                        }
-                      },
-                      decoration: InputDecoration(
-                        hintText: "Full Name",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+                  children: [
+                    //get name
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: _UserNameController,
+                        validator: (value) {
+                          //check weather the user entered a valid user name
+                          if (value!.isEmpty) {
+                            return "Please Enter Your Name";
+                          }
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Full Name",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          contentPadding: const EdgeInsets.all(20),
                         ),
-                        contentPadding: const EdgeInsets.all(20)
                       ),
                     ),
-                  ),
-            
-            
-                  //get email
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: _EmailController,
-                      validator: (value) {
-                        if(value!.isEmpty){
-                          return "Please Enter Your Email";
-                        }
-                      },
-                      decoration: InputDecoration(
-                        hintText: "email",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+
+                    //get email
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: _EmailController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Please Enter Your Email";
+                          }
+                        },
+                        decoration: InputDecoration(
+                          hintText: "email",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          contentPadding: const EdgeInsets.all(20),
                         ),
-                        contentPadding: const EdgeInsets.all(20)
                       ),
                     ),
-                  ),
-            
-                  //get pasword
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: _PasswordController,
-                      validator: (value) {
-                        if(value!.isEmpty){
-                          return "Please Enter the valued password";
-                        }
-                      },
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: "Password",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+
+                    //get pasword
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: _PasswordController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Please Enter the valued password";
+                          }
+                        },
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: "Password",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          contentPadding: const EdgeInsets.all(20),
                         ),
-                        contentPadding: const EdgeInsets.all(20)
                       ),
                     ),
-                  ),
 
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: _ConformPasswordController,
-                      validator: (value) {
-                        if(value!.isEmpty){
-                          return "Please Enter the same Password";
-                        }
-                      },
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: "Conform Password",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: _ConformPasswordController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Please Enter the same Password";
+                          }
+                        },
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: "Conform Password",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          contentPadding: const EdgeInsets.all(20),
                         ),
-                        contentPadding: const EdgeInsets.all(20)
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 10,),
-                  //remember for the next time
+                    const SizedBox(height: 10),
+                    //remember for the next time
 
-                  Row(children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CheckboxListTile(
+                            activeColor: kMainColor,
 
+                            value: _rememberME,
+                            title: Text(
+                              "Remember Me for the next time",
+                              style: TextStyle(color: kGrey, fontSize: 15),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _rememberME
+                                    ? _rememberME = false
+                                    : _rememberME = true;
 
-                    Expanded(child:
-                     CheckboxListTile(
-                      activeColor: kMainColor,
-                      
-                      value: _rememberME,
-                      title:Text("Remember Me for the next time",
-                    style: TextStyle(
-                      color: kGrey,
-                      fontSize: 15
-                    ),),
-                       onChanged: (value){
-                        setState(() {
-                          _rememberME ? _rememberME = false : _rememberME = true;
-                        });
-                       }))
+                                    print(_rememberME);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
 
+                    SizedBox(height: 60),
 
-                  ],),
+                    Custombutton(
+                      buttonName: "Next",
+                      color: kMainColor,
+                      next: () async {
+                        print("hello");
+                        if (_formKey.currentState!.validate()) {
+                          //Form is valuid prossec data
+                          String userName = _UserNameController.text;
+                          String email = _EmailController.text;
+                          String password = _PasswordController.text;
+                          String comPassword = _ConformPasswordController.text;
 
-                  SizedBox(height: 60,),
+                          //save ther user data in storage
 
-                  Custombutton(buttonName: "Next", color: kMainColor, next: (){
+                          await UserService.userData(
+                            userName,
+                            email,
+                            password,
+                            comPassword,
+                            context,
+                            _rememberME,
+                            () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (context) => const Home(),
+                                ),
+                              );
+                            },
+                          );
 
-                    print("hello");
-                    if(_formKey.currentState!.validate()){
-
-                      //Form is valuid prossec data
-                      String userName = _UserNameController.text;
-                      String email = _EmailController.text;
-                      String password = _PasswordController.text;
-                      String comPassword = _ConformPasswordController.text;
-
-
-                      print("$userName");
-                      print("$email");
-                      print("$password");
-                      print("$comPassword");
-                    }
-                  })
-                  
-                ],
-              ))
+                          print("$userName");
+                          print("$email");
+                          print("$password");
+                          print("$comPassword");
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
-    
   }
 }

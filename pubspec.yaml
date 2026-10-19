@@ -38,6 +38,7 @@ dependencies:
   bounce: ^1.0.2
   vibration: ^3.2.1
   switcher_button: ^0.0.4
+  shared_preferences: ^2.5.6
 
 dev_dependencies:
   flutter_test:

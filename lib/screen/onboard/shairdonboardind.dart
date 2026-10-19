@@ -26,14 +26,18 @@ class Shairdonboardind extends StatelessWidget {
       
           const  SizedBox(height: 20,),
       
-          Text(title,style: TextStyle(
+          Text(title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
             fontSize: 28,
             fontWeight:const FontWeight(800),
           ),),
       
            const  SizedBox(height: 20,),
       
-          Text(description,style: const TextStyle(
+          Text(description,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
             fontSize: 16,
             color: kGrey,
             fontWeight: FontWeight(500),

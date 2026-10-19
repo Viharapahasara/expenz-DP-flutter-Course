@@ -92,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       color: kMainColor,
                       next: () {
                         if (showDtailsPAge) {
-                        
+                      
                           Navigator.push(
                             context,
                             MaterialPageRoute(
