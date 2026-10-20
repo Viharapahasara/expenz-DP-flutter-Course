@@ -52,4 +52,15 @@ ScaffoldMessenger.of(context).showSnackBar(
             String? userName = prefs.getString('userName');
             return userName != null;
         }
+
+  //get the use name and the email 
+      static Future<Map <String , String>> getUserData() async{
+          //create an instence for sharipreferences
+
+          SharedPreferences pref = await SharedPreferences.getInstance();
+
+          String? userName = pref.getString("userName");
+          String? email = pref.getString("userName");
+          return {"userName" : userName!, "email" : email!};
+      }
 }

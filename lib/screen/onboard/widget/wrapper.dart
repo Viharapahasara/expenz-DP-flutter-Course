@@ -1,4 +1,4 @@
-import 'package:expenz/page/home.dart';
+import 'package:expenz/page/main_screen.dart';
 import 'package:expenz/screen/onboard/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     return widget.showMAinScreen 
-    ? Home() 
+    ? MainScreen() 
     : OnboardingScreen();
   }
 }
