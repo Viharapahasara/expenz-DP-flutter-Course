@@ -153,9 +153,12 @@ class _UserdataScreenState extends State<UserdataScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _rememberME
-                                    ? _rememberME = false
-                                    : _rememberME = true;
+                                if(_rememberME){
+                                  _rememberME = false;
+                                }else{
+                                  _rememberME = true;
+                                }
+                                   
 
                                     print(_rememberME);
                               });
@@ -197,7 +200,7 @@ class _UserdataScreenState extends State<UserdataScreen> {
                             },
                           );
 
-                          print("$userName");
+                          print("$userName");  
                           print("$email");
                           print("$password");
                           print("$comPassword");

@@ -44,4 +44,12 @@ ScaffoldMessenger.of(context).showSnackBar(
   goToHomePage();
  }
  }
+
+ //methord to check weather the user name is saved in the shared pref
+        static Future<bool> checkUserName() async{
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+
+            String? userName = prefs.getString('userName');
+            return userName != null;
+        }
 }

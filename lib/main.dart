@@ -1,4 +1,6 @@
 import 'package:expenz/screen/onboard/onboarding_screen.dart';
+import 'package:expenz/screen/onboard/widget/wrapper.dart';
+import 'package:expenz/services/user_service.dart';
 import 'package:flutter/material.dart';
 
 void main(){
@@ -10,14 +12,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Expenz",
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: "Inter",
-      ),
+    return FutureBuilder(
+      future: UserService.checkUserName(),
+      builder: (context, snapshot) {
+        
+        //if the snapshot is stilll awaiting
+        if (snapshot.connectionState == ConnectionState.waiting){
+          return const CircularProgressIndicator();
+          
+        }else{
+          //heare the has usetr name will be set to true of  the data in ther  snapshot  and otherwise false
+          bool hasUserName = snapshot.data ?? false;
 
-      home: OnboardingScreen(),
-    );
-  }
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              fontFamily: "Inter",
+            ),
+            home: Wrapper(showMAinScreen: hasUserName),
+          );
+        }
+      },
+      );
+    }
 }
