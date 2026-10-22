@@ -7,12 +7,13 @@ class IncomeExpensesCard extends StatefulWidget {
   final String value;
   final String imageUrl;
   final Color color;
+  final VoidCallback navigate;
 
   const IncomeExpensesCard({
     super.key,
     required this.title,
     required this.value,
-    required this.color, required this.imageUrl,
+    required this.color, required this.imageUrl, required this.navigate,
   });
 
   @override
@@ -23,7 +24,9 @@ class _IncomeExpensesCardState extends State<IncomeExpensesCard> {
   @override
   Widget build(BuildContext context) {
     return Bounce(
-      onTap: () {},
+      onTap: () {
+            widget.navigate();
+      },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.45,
         height: 95,

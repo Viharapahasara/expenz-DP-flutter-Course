@@ -1,5 +1,5 @@
 import 'package:expenz/constants/colors.dart';
-import 'package:expenz/page/add_page.dart';
+import 'package:expenz/page/Add_page/add_page.dart';
 import 'package:expenz/page/budget_page.dart';
 import 'package:expenz/page/home_page.dart';
 import 'package:expenz/page/profile_page.dart';
@@ -61,17 +61,17 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildBody() {
     switch (selectedPos) {
       case 0:
-        return const HomePage();
+        return const AddPage(currentPageNo: 0,); 
       case 1:
         return const TransactionPage();
       case 2:
-        return const AddPage();
+        return const AddPage(currentPageNo: 0,);
       case 3:
         return const BudgetPage();
       case 4:
         return const ProfilePage();
       default:
-        return const HomePage();
+        return const AddPage(currentPageNo: 0,);
     }
   }
 

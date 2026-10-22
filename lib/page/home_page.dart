@@ -1,5 +1,9 @@
 import 'package:expenz/constants/colors.dart';
 import 'package:expenz/constants/constents.dart';
+
+
+import 'package:expenz/page/Add_page/add_page.dart';
+
 import 'package:expenz/services/user_service.dart';
 import 'package:expenz/widget_card/income_expenses_card.dart';
 import 'package:flutter/material.dart';
@@ -46,8 +50,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-
-
             Stack(
               children: [
                 Container(
@@ -84,13 +86,13 @@ class _HomePageState extends State<HomePage> {
                             child: Icon(Icons.person, size: 30),
                           ),
 
-                          SizedBox(width: 10,),
+                          SizedBox(width: 10),
 
                           Expanded(
                             child: Text(
-                              "Wellcome $username", 
-                              maxLines: 1, 
-                              overflow: TextOverflow.ellipsis, 
+                              "Wellcome $username",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -98,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
 
-                          SizedBox(width: 10,),
+                          SizedBox(width: 10),
 
                           IconButton(
                             onPressed: () {},
@@ -111,26 +113,45 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
 
-
-                        SizedBox(height: MediaQuery.of(context).size.height*0.05),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                      ),
 
                       //Income and Expend card
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           IncomeExpensesCard(
-                          title: 'Income', 
-                          value: '5000', 
-                          imageUrl: "assets/images/income.png",
-                          color: kGreen,),
-                          
+                            title: 'Income',
+                            value: '5000',
+                            imageUrl: "assets/images/income.png",
+                            color: kGreen,
+                            navigate: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddPage( currentPageNo: 1,)
+                                ),
+                              );
+                            },
+                          ),
+
                           IncomeExpensesCard(
-                          title: 'Expenses', 
-                          value: '1200', 
-                          imageUrl: "assets/images/expense.png",
-                          color: kRed,),
+                            title: 'Expenses',
+                            value: '1200',
+                            imageUrl: "assets/images/expense.png",
+                            color: kRed,
+                            navigate: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddPage( currentPageNo: 0,)
+                                ),
+                              );
+                            },
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
