@@ -35,6 +35,10 @@ class _AddnewBlindState extends State<AddnewBlind> {
   final TextEditingController _AmountController = TextEditingController();
   final TextEditingController _expenseCategory = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+
+  Object? _selectedCategory;
+
   DateTime _selectedDate = DateTime.now();
   DateTime _selectTime = DateTime.now();
 
@@ -107,7 +111,7 @@ class _AddnewBlindState extends State<AddnewBlind> {
 
             Container(
               width: double.infinity,
-              height: 680,
+              height: 740,
               decoration: BoxDecoration(
                 color: kWhite,
                 borderRadius: BorderRadius.horizontal(
@@ -125,118 +129,213 @@ class _AddnewBlindState extends State<AddnewBlind> {
                   child: Column(
                     children: [
                       //catogary selector drop down
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: kdefaultpadding,
-                        ),
-                        child: DropdownButtonFormField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-
-                            hintText: "Select Category",
-                            hintStyle: TextStyle(
-                              color: Colors.grey.shade400,
-                              fontSize: 14,
-                            ),
-                            prefixIcon: const Icon(
-                              Icons.category,
-                              color: kMainColor,
-                            ),
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-
-                          items: widget.item,
-                          onChanged: (value) {},
-                        ),
-                      ),
-
-                      //
-                      // Title
-                      TextField(
-                        controller: _titleController,
-
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-
-                        decoration: InputDecoration(
-                          hintText: "Ttile",
-                          hintStyle: TextStyle(color: kGrey, fontSize: 16),
-
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(100),
-                            borderSide: BorderSide(color: kGrey, width: 1.2),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: BorderSide(
-                              color: kMainColor,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      //Description
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: kdefaultpadding,
-                        ),
-                        child: TextField(
-                          controller: _DescriptionController,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-
-                          decoration: InputDecoration(
-                            hintText: "Description",
-                            hintStyle: TextStyle(color: kGrey, fontSize: 16),
-
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(100),
-                              borderSide: BorderSide(color: kGrey, width: 1.2),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide: BorderSide(
-                                color: kMainColor,
-                                width: 1.5,
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            // Category dropdown
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: kdefaultpadding,
+                              ),
+                              child: DropdownButtonFormField<Object>(
+                                initialValue: _selectedCategory,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  hintText: "Select Category",
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey.shade400,
+                                    fontSize: 14,
+                                  ),
+                                  prefixIcon: const Icon(
+                                    Icons.category,
+                                    color: kMainColor,
+                                  ),
+                                ),
+                                borderRadius: BorderRadius.circular(15),
+                                items: widget.item,
+                                validator: (value) => value == null
+                                    ? 'Please select a category'
+                                    : null,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedCategory = value;
+                                  });
+                                },
                               ),
                             ),
-                          ),
-                        ),
-                      ),
 
-                      //Amount
-                      TextField(
-                        controller: _AmountController,
-
-                        keyboardType: TextInputType.number,
-
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-
-                        decoration: InputDecoration(
-                          hintText: "Amount",
-                          hintStyle: TextStyle(color: kGrey, fontSize: 16),
-
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(100),
-                            borderSide: BorderSide(color: kGrey, width: 1.2),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: BorderSide(
-                              color: kMainColor,
-                              width: 1.5,
+                            // Title
+                            TextFormField(
+                              controller: _titleController,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Please enter a title';
+                                }
+                                if (value.trim().length < 3) {
+                                  return 'Title must be at least 3 characters';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Title",
+                                hintStyle: TextStyle(
+                                  color: kGrey,
+                                  fontSize: 16,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                  borderSide: BorderSide(
+                                    color: kGrey,
+                                    width: 1.2,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide(
+                                    color: kMainColor,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 1.2,
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+
+                            // Description
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: kdefaultpadding,
+                              ),
+                              child: TextFormField(
+                                controller: _DescriptionController,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter a description';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: "Description",
+                                  hintStyle: TextStyle(
+                                    color: kGrey,
+                                    fontSize: 16,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(100),
+                                    borderSide: BorderSide(
+                                      color: kGrey,
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                    borderSide: BorderSide(
+                                      color: kMainColor,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(100),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            // Amount
+                            TextFormField(
+                              controller: _AmountController,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Please enter an amount';
+                                }
+                                final amount = double.tryParse(value.trim());
+                                if (amount == null) {
+                                  return 'Please enter a valid number';
+                                }
+                                if (amount <= 0) {
+                                  return 'Amount must be greater than 0';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Amount",
+                                hintStyle: TextStyle(
+                                  color: kGrey,
+                                  fontSize: 16,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                  borderSide: BorderSide(
+                                    color: kGrey,
+                                    width: 1.2,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide(
+                                    color: kMainColor,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 1.2,
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
 
@@ -393,6 +492,11 @@ class _AddnewBlindState extends State<AddnewBlind> {
                         buttonName: "Add",
                         color: widget.bgColor,
                         next: () async {
+                          // NEW: run all validators, stop here if any field is invalid
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+
                           print("page index : ${widget.page}");
                           //ADD Expense Function
                           if (widget.page == 0) {
@@ -403,14 +507,17 @@ class _AddnewBlindState extends State<AddnewBlind> {
 
                             final expense = Expense(
                               id: loardedExpenses.length + 1,
-                              title: _titleController.text,
-                              amount: _AmountController.text.isEmpty
-                                  ? 0
-                                  : double.parse(_AmountController.text),
-                              category: ExpenseCategory.values.first,
+                              title: _titleController.text
+                                  .trim(), // CHANGED: trim spaces
+                              // CHANGED: amount is already validated, so parse directly
+                              amount: double.parse(
+                                _AmountController.text.trim(),
+                              ),
+                              category: _selectedCategory as ExpenseCategory,
                               date: _selectedDate,
                               time: _selectTime,
-                              description: _DescriptionController.text,
+                              description: _DescriptionController.text
+                                  .trim(), // CHANGED: trim spaces
                             );
 
                             widget.addExpense(expense);
@@ -434,14 +541,17 @@ class _AddnewBlindState extends State<AddnewBlind> {
 
                             final income = Income(
                               id: loadedIncome.length + 1,
-                              title: _titleController.text,
-                              amount: _AmountController.text.isEmpty
-                                  ? 0
-                                  : double.parse(_AmountController.text),
-                              catagory: IncomeCategory.values.first,
+                              title: _titleController.text
+                                  .trim(), // CHANGED: trim spaces
+                              // CHANGED: amount is already validated, so parse directly
+                              amount: double.parse(
+                                _AmountController.text.trim(),
+                              ),
+                              catagory: _selectedCategory as IncomeCategory,
                               date: _selectedDate,
                               time: _selectTime,
-                              description: _DescriptionController.text,
+                              description: _DescriptionController.text
+                                  .trim(), // CHANGED: trim spaces
                             );
 
                             widget.addExpense(income);
@@ -455,7 +565,6 @@ class _AddnewBlindState extends State<AddnewBlind> {
                             _titleController.clear();
                             _AmountController.clear();
                             _DescriptionController.clear();
-                            
                           }
                         },
                       ),

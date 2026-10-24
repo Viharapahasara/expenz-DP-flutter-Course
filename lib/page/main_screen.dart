@@ -31,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       expenseList = loadedExpenses;
       print(expenseList.length);
+      print("${expenseList.toString()}");
     });
   }
   
@@ -58,6 +59,10 @@ class _MainScreenState extends State<MainScreen> {
   //Function to add new Income
   void addNewIncome (Income newIncome) async{
     await IncomeService().saveIncome(newIncome, context);
+
+    setState(() {
+      incomeList.add(newIncome);
+    });
   }
 
   List<TabItem> tabItems = List.of([
@@ -82,6 +87,14 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
+  //Function to remove a expense
+  void removeExpense (Expense expense){
+    ExpenseSevice().deleteExpenses(expense.id, context);
+    setState(() {
+      expenseList.remove(expense);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,10 +112,10 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildBody() {
     switch (selectedPos) {
-      case 0:
-        return const HomePage(); // 🟢 Case 0 = Home
       case 1:
-        return const TransactionPage();
+        return const HomePage(); // 🟢 Case 0 = Home
+      case 0:
+        return TransactionPage(expenseList: expenseList, onDismissedExpense: removeExpense, incomeList: incomeList,);
       case 2:
         return AddPage(currentPageNo: 0, addExpense: addNewExpense, addIncome: addNewIncome,); // 🟢 Case 2 = Add
       case 3:

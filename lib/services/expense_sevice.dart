@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:expenz/modles/expense_catagory_modle.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,11 +34,11 @@ class ExpenseSevice {
           .map((e) => json.encode(e.toJSON()))
           .toList();
 
-      
       await pref.setStringList(_expenseKey, updateExpenses);
 
-      
-      print("✅ Successfully Saved to Storage! Items count: ${updateExpenses.length}");
+      print(
+        "✅ Successfully Saved to Storage! Items count: ${updateExpenses.length}",
+      );
 
       // Show success message
       if (context.mounted) {
@@ -79,5 +80,50 @@ class ExpenseSevice {
       print(" Error inside loardExpenses: ${error.toString()}");
       return [];
     }
+  }
+
+  //Delete the expense from shared pref
+  Future<void> deleteExpenses(int id, BuildContext context) async {
+    try {
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      List<String>? exsistingExpense = pref.getStringList(_expenseKey);
+
+      //convert the exsisting Expense to a list
+      List<Expense> exsistingExpenseObject = [];
+      if (exsistingExpense != null) {
+        exsistingExpenseObject = exsistingExpense
+            .map(((e) => Expense.fromJSON(json.decode(e))))
+            .toList();
+      }
+
+      //remove the expense with the specified id from the list
+      exsistingExpenseObject.removeWhere((element) => element.id == id);
+
+      //convert the list of Expense object back to a list of String
+      List<String> updateExpense = exsistingExpenseObject
+          .map((e) => json.encode(e.toJSON()))
+          .toList();
+
+      await pref.setStringList(_expenseKey, updateExpense);
+
+      //show snake bar
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Expense deleted Successfully!"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (error) {
+      print(error.toString());
+       if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Error Deleting Expense"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+    }}
   }
 }
