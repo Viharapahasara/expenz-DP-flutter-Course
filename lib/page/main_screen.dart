@@ -1,9 +1,13 @@
 import 'package:expenz/constants/colors.dart';
+import 'package:expenz/modles/expense_catagory_modle.dart';
+import 'package:expenz/modles/income_modle.dart';
 import 'package:expenz/page/Add_page/add_page.dart';
 import 'package:expenz/page/budget_page.dart';
 import 'package:expenz/page/home_page.dart';
 import 'package:expenz/page/profile_page.dart';
 import 'package:expenz/page/transcripton_page.dart';
+import 'package:expenz/services/expense_sevice.dart';
+import 'package:expenz/services/income_service.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_bottom_navigation/circular_bottom_navigation.dart';
 import 'package:circular_bottom_navigation/tab_item.dart';
@@ -19,26 +23,62 @@ class _MainScreenState extends State<MainScreen> {
   int selectedPos = 0;
   late CircularBottomNavigationController _navigationController;
 
+  List<Expense> expenseList = [];
+  List<Income> incomeList = [];
+  // Function to fetch data
+  void fetchAllExpenses() async {
+    List<Expense> loadedExpenses = await ExpenseSevice().loardExpenses();
+    setState(() {
+      expenseList = loadedExpenses;
+      print(expenseList.length);
+    });
+  }
+  
+
+  // Function to add a new Expense
+  void addNewExpense(Expense newExpense) async {
+    
+    await ExpenseSevice().saveExpenses(newExpense, context);
+
+    
+    setState(() {
+      expenseList.add(newExpense);
+    });
+  }
+
+  //Function to frech Income data
+  void frechAllIncome () async {
+    List<Income> loardIncome = await IncomeService().loardIncome();
+    setState(() {
+      incomeList = loardIncome;
+      print(incomeList);
+    });
+  }
+
+  //Function to add new Income
+  void addNewIncome (Income newIncome) async{
+    await IncomeService().saveIncome(newIncome, context);
+  }
+
   List<TabItem> tabItems = List.of([
     TabItem(Icons.home, "Home", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
     TabItem(Icons.list_rounded, "Records", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
     TabItem(Icons.add, "Add", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
     TabItem(Icons.rocket, "Budget", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
     TabItem(Icons.person, "Profile", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
-    
-    
   ]);
 
   @override
   void initState() {
     super.initState();
-    // Controller එක initialize කරනවා
     _navigationController = CircularBottomNavigationController(selectedPos);
+    fetchAllExpenses();
+    frechAllIncome(); 
   }
 
   @override
   void dispose() {
-    _navigationController.dispose(); // Memory leak නොවෙන්න dispose කරනවා
+    _navigationController.dispose();
     super.dispose();
   }
 
@@ -57,25 +97,23 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
- 
   Widget _buildBody() {
     switch (selectedPos) {
       case 0:
-        return const AddPage(currentPageNo: 0,); 
+        return const HomePage(); // 🟢 Case 0 = Home
       case 1:
         return const TransactionPage();
       case 2:
-        return const AddPage(currentPageNo: 0,);
+        return AddPage(currentPageNo: 0, addExpense: addNewExpense, addIncome: addNewIncome,); // 🟢 Case 2 = Add
       case 3:
         return const BudgetPage();
       case 4:
         return const ProfilePage();
       default:
-        return const AddPage(currentPageNo: 0,);
+        return const HomePage();
     }
   }
 
- 
   Widget _buildBottomNav() {
     return CircularBottomNavigation(
       tabItems,

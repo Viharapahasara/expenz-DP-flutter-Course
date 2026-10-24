@@ -1,7 +1,7 @@
 import 'package:expenz/constants/colors.dart';
 import 'package:expenz/page/main_screen.dart';
 
-import 'package:expenz/screen/onboard/widget/custombutton.dart';
+import 'package:expenz/screen/onboard/widget/custom_button/custombutton.dart';
 import 'package:expenz/services/user_service.dart';
 import 'package:flutter/material.dart';
 

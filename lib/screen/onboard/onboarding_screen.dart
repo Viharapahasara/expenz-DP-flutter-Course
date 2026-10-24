@@ -2,7 +2,7 @@ import 'package:expenz/constants/colors.dart';
 import 'package:expenz/data/onboarding_data.dart';
 import 'package:expenz/screen/onboard/fontpage.dart';
 import 'package:expenz/screen/onboard/shairdonboardind.dart';
-import 'package:expenz/screen/onboard/widget/custombutton.dart';
+import 'package:expenz/screen/onboard/widget/custom_button/custombutton.dart';
 import 'package:expenz/screen/userdata_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';

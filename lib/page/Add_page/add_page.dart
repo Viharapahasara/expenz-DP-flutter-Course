@@ -7,7 +7,13 @@ import 'package:flutter/material.dart';
 
 class AddPage extends StatefulWidget {
   final int currentPageNo;
-  const AddPage({super.key, required this.currentPageNo});
+  final Function(Expense) addExpense;
+  final Function(Income) addIncome;
+  const AddPage({
+    super.key,
+    required this.currentPageNo,
+    required this.addExpense, required this.addIncome,
+  });
 
   @override
   State<AddPage> createState() => _AddPageState();
@@ -15,18 +21,16 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   int currentPage = 0;
-  
-  
+
   late final PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    
+
     _pageController = PageController(initialPage: widget.currentPageNo);
-    
-    
-    currentPage = widget.currentPageNo; 
+
+    currentPage = widget.currentPageNo;
   }
 
   @override
@@ -34,6 +38,7 @@ class _AddPageState extends State<AddPage> {
     _pageController.dispose(); // Memory leaks dispose
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     print("restarted");
@@ -51,24 +56,35 @@ class _AddPageState extends State<AddPage> {
             },
 
             children: [
+              //ADD expense
               AddnewBlind(
                 bgColor: kRed,
                 item: ExpenseCategory.values.map((catagory) {
-                          return DropdownMenuItem(
-                            value: catagory,
-                            child: Text(catagory.name),
-                          );
-                        }).toList(),
+                  return DropdownMenuItem(
+                    value: catagory,
+                    child: Text(catagory.name),
+                  );
+                }).toList(),
+                addExpense: (dynamic expense) {
+                  widget.addExpense(expense as Expense);
+                },
+                page: currentPage,
               ),
+
+              //ADD Income
               AddnewBlind(
                 bgColor: kGreen,
-                item: IncomeCategory.values.map((catagory){
-                          return DropdownMenuItem(
-                            value: catagory,
-                            child: Text(catagory.name),
-                          );
+                item: IncomeCategory.values.map((catagory) {
+                  return DropdownMenuItem(
+                    value: catagory,
+                    child: Text(catagory.name),
+                  );
                 }).toList(),
-                ),
+                addExpense: (dynamic expense) async {
+                  await widget.addIncome(expense as Income);
+                },
+                page: currentPage,
+              ),
             ],
           ),
 
@@ -93,8 +109,8 @@ class _AddPageState extends State<AddPage> {
                     boxShadow: [
                       BoxShadow(
                         color: kWhite.withValues(alpha: 0.5),
-                        spreadRadius: 2, 
-                        blurRadius: 8, 
+                        spreadRadius: 2,
+                        blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ],

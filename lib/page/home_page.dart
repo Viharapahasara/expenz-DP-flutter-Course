@@ -126,14 +126,7 @@ class _HomePageState extends State<HomePage> {
                             value: '5000',
                             imageUrl: "assets/images/income.png",
                             color: kGreen,
-                            navigate: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddPage( currentPageNo: 1,)
-                                ),
-                              );
-                            },
+                           
                           ),
 
                           IncomeExpensesCard(
@@ -141,14 +134,7 @@ class _HomePageState extends State<HomePage> {
                             value: '1200',
                             imageUrl: "assets/images/expense.png",
                             color: kRed,
-                            navigate: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddPage( currentPageNo: 0,)
-                                ),
-                              );
-                            },
+                           
                           ),
                         ],
                       ),

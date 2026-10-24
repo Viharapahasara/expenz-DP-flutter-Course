@@ -17,6 +17,7 @@ class Custombutton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Bounce(
       onTap: () { 
+        print("button is working");
         next();
        },
        duration: const Duration(milliseconds: 110),

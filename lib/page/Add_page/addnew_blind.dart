@@ -3,7 +3,10 @@ import 'package:expenz/constants/colors.dart';
 import 'package:expenz/constants/constents.dart';
 import 'package:expenz/data/add_new_page.dart';
 import 'package:expenz/modles/expense_catagory_modle.dart';
-import 'package:expenz/screen/onboard/widget/custombutton.dart';
+import 'package:expenz/modles/income_modle.dart';
+import 'package:expenz/screen/onboard/widget/custom_button/custombutton.dart';
+import 'package:expenz/services/expense_sevice.dart';
+import 'package:expenz/services/income_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +14,16 @@ class AddnewBlind extends StatefulWidget {
   final Color bgColor;
   final List<DropdownMenuItem<Object>> item;
 
-  AddnewBlind({super.key, required this.bgColor, required this.item});
+  final void Function(dynamic) addExpense;
+  final int page;
+
+  AddnewBlind({
+    super.key,
+    required this.bgColor,
+    required this.item,
+    required this.addExpense,
+    required this.page,
+  });
 
   @override
   State<AddnewBlind> createState() => _AddnewBlindState();
@@ -21,6 +33,7 @@ class _AddnewBlindState extends State<AddnewBlind> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _DescriptionController = TextEditingController();
   final TextEditingController _AmountController = TextEditingController();
+  final TextEditingController _expenseCategory = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
   DateTime _selectTime = DateTime.now();
@@ -30,6 +43,7 @@ class _AddnewBlindState extends State<AddnewBlind> {
     _titleController.dispose();
     _DescriptionController.dispose();
     _AmountController.dispose();
+    _expenseCategory.dispose();
 
     super.dispose();
   }
@@ -371,11 +385,80 @@ class _AddnewBlindState extends State<AddnewBlind> {
                           ],
                         ),
                       ),
-                        SizedBox(height: 10,),
+                      SizedBox(height: 10),
                       Divider(),
-                         SizedBox(height: 10,),
-                      
-                      Custombutton(buttonName: "Add", color: widget.bgColor, next: (){})
+                      SizedBox(height: 10),
+
+                      Custombutton(
+                        buttonName: "Add",
+                        color: widget.bgColor,
+                        next: () async {
+                          print("page index : ${widget.page}");
+                          //ADD Expense Function
+                          if (widget.page == 0) {
+                            //save the expense data shared pref
+                            List<Expense> loardedExpenses =
+                                await ExpenseSevice().loardExpenses();
+                            print(loardedExpenses.length);
+
+                            final expense = Expense(
+                              id: loardedExpenses.length + 1,
+                              title: _titleController.text,
+                              amount: _AmountController.text.isEmpty
+                                  ? 0
+                                  : double.parse(_AmountController.text),
+                              category: ExpenseCategory.values.first,
+                              date: _selectedDate,
+                              time: _selectTime,
+                              description: _DescriptionController.text,
+                            );
+
+                            widget.addExpense(expense);
+
+                            List<Expense> updatedList = await ExpenseSevice()
+                                .loardExpenses();
+                            print(
+                              "📊 Current Total Expenses in Storage: ${updatedList.length}",
+                            );
+
+                            _titleController.clear();
+                            _AmountController.clear();
+                            _DescriptionController.clear();
+
+                            //ADD Income Function
+                          } else if (widget.page == 1) {
+                            // save the income data share pref
+                            List<Income> loadedIncome = await IncomeService()
+                                .loardIncome();
+                            print(loadedIncome.length);
+
+                            final income = Income(
+                              id: loadedIncome.length + 1,
+                              title: _titleController.text,
+                              amount: _AmountController.text.isEmpty
+                                  ? 0
+                                  : double.parse(_AmountController.text),
+                              catagory: IncomeCategory.values.first,
+                              date: _selectedDate,
+                              time: _selectTime,
+                              description: _DescriptionController.text,
+                            );
+
+                            widget.addExpense(income);
+
+                            List<Income> updateIncomeList =
+                                await IncomeService().loardIncome();
+                            print(
+                              "📊 Current Total Income in Storage: ${updateIncomeList.length}",
+                            );
+
+                            _titleController.clear();
+                            _AmountController.clear();
+                            _DescriptionController.clear();
+                            
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),
