@@ -74,4 +74,46 @@ class IncomeService {
       return [];
     }
   }
+
+  //delete an income
+  Future<void> deleteIncome(int id, BuildContext context) async {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    try {
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      List<String>? existingIncome = pref.getStringList(_incomeKey);
+
+      List<Income> incomeList = existingIncome == null
+          ? []
+          : existingIncome
+              .map((e) => Income.fromJSON(json.decode(e)))
+              .toList();
+
+      incomeList.removeWhere((item) => item.id == id);
+
+      await pref.setStringList(
+        _incomeKey,
+        incomeList.map((e) => json.encode(e.toJSON())).toList(),
+      );
+
+      if (messenger != null && messenger.mounted) {
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text("Income deleted successfully!"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+
+    } catch (error) {
+      print("Error inside deleteIncome : ${error.toString()}");
+      if (messenger != null && messenger.mounted) {
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text("Error on deleting Income!"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
 }

@@ -95,6 +95,14 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  //Function to remove an income
+  void removeIncome(Income income) {
+    IncomeService().deleteIncome(income.id, context);
+    setState(() {
+      incomeList.remove(income);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,10 +120,10 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildBody() {
     switch (selectedPos) {
-      case 1:
-        return const HomePage(); // 🟢 Case 0 = Home
       case 0:
-        return TransactionPage(expenseList: expenseList, onDismissedExpense: removeExpense, incomeList: incomeList,);
+        return const HomePage(); // 🟢 Case 0 = Home
+      case 1:
+        return TransactionPage(expenseList: expenseList, onDismissedExpense: removeExpense, incomeList: incomeList, onDismissedIncome: removeIncome);
       case 2:
         return AddPage(currentPageNo: 0, addExpense: addNewExpense, addIncome: addNewIncome,); // 🟢 Case 2 = Add
       case 3:

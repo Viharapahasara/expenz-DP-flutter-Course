@@ -43,7 +43,7 @@ class IncomeCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(15.0),
               child: Container(
                 width: 60,
                 height: 60,
@@ -92,7 +92,7 @@ class IncomeCard extends StatelessWidget {
                   ),
                         
                   SizedBox(
-                    width: 135,
+                    width: 125,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Column(
@@ -102,7 +102,7 @@ class IncomeCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: kRed,
+                            color: kGreen,
                             fontSize: 20,
                             fontWeight: FontWeight.bold
                           ),),

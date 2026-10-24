@@ -11,10 +11,11 @@ class TransactionPage extends StatefulWidget {
   final List<Income> incomeList;
   final List<Expense> expenseList;
   final void Function(Expense) onDismissedExpense;
+  final void Function(Income) onDismissedIncome;
   const TransactionPage({
     super.key,
     required this.expenseList,
-    required this.onDismissedExpense, required this.incomeList,
+    required this.onDismissedExpense, required this.incomeList, required this.onDismissedIncome,
   });
 
   @override
@@ -28,6 +29,7 @@ class _TransactionPageState extends State<TransactionPage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
+          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -114,8 +116,14 @@ class _TransactionPageState extends State<TransactionPage> {
                 itemBuilder: (BuildContext context, int index) {
                   final Income income = widget.incomeList[index];
                   return Dismissible(
+
                     key: ValueKey(income),
                     direction: DismissDirection.startToEnd,
+                    onDismissed: (direction) {
+                      setState(() {
+                        widget.onDismissedIncome(income);
+                      });
+                    },
                     child: IncomeCard(
                       category: income.catagory,
                       title: income.title!,
@@ -125,6 +133,23 @@ class _TransactionPageState extends State<TransactionPage> {
                     ),
                   );
                 },
+              ),
+            ),
+            SizedBox(height: 20,),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Center(
+                    child: Text("Swip to delete Expense and Income",
+                    style: TextStyle(
+                      color: kRed,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12
+                    ),),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: MediaQuery.of(context).padding.bottom*3,)
