@@ -44,6 +44,9 @@ dependencies:
   circular_bottom_navigation: ^2.4.0
   flutter_keyboard_visibility: ^7.0.1
   intl: ^0.20.3
+  chartify: ^1.0.2
+  geekyants_flutter_gauges: ^1.0.4
+  simple_animation_progress_bar: ^1.9.2
 
 dev_dependencies:
   flutter_test:

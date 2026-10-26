@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 
 import 'package:expenz/modles/expense_catagory_modle.dart';
@@ -12,35 +10,40 @@ class IncomeService {
 
   Future<void> saveIncome(Income income, BuildContext context) async {
     try {
-      
-
       SharedPreferences pref = await SharedPreferences.getInstance();
       List<String>? exsistingIncome = pref.getStringList(_incomeKey);
 
       //convert the exsixting income data to  a list of object
       List<Income> exsistingIncomeObject = [];
 
-      if(exsistingIncome != null){
-        exsistingIncomeObject = exsistingIncome.map((e) => Income.fromJSON(json.decode(e))).toList();
+      if (exsistingIncome != null) {
+        exsistingIncomeObject = exsistingIncome
+            .map((e) => Income.fromJSON(json.decode(e)))
+            .toList();
       }
 
       //add new Incomes to the list
       exsistingIncomeObject.add(income);
 
-    //convert the exsisting object to the JSON list of String
-    List<String> updateIncomes = exsistingIncomeObject.map((e) => json.encode(e.toJSON())).toList();
-                                                      
-    await pref.setStringList(_incomeKey, updateIncomes);
-    print("Successefully saved to Storage! Items count : ${updateIncomes.length}");
+      //convert the exsisting object to the JSON list of String
+      List<String> updateIncomes = exsistingIncomeObject
+          .map((e) => json.encode(e.toJSON()))
+          .toList();
 
-    //show successe mg
-    if(context.mounted){
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Income added Successfully!"),
-        duration: Duration(seconds: 2),)
+      await pref.setStringList(_incomeKey, updateIncomes);
+      print(
+        "Successefully saved to Storage! Items count : ${updateIncomes.length}",
       );
-    }
 
+      //show successe mg
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Income added Successfully!"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } catch (error) {
       print("Error mg of the saveIncome: ${error.toString()}");
       if (context.mounted) {
@@ -49,8 +52,8 @@ class IncomeService {
             content: Text("Error on Adding Expense!"),
             duration: Duration(seconds: 2),
           ),
-          );
-          }
+        );
+      }
     }
   }
 
@@ -84,9 +87,7 @@ class IncomeService {
 
       List<Income> incomeList = existingIncome == null
           ? []
-          : existingIncome
-              .map((e) => Income.fromJSON(json.decode(e)))
-              .toList();
+          : existingIncome.map((e) => Income.fromJSON(json.decode(e))).toList();
 
       incomeList.removeWhere((item) => item.id == id);
 
@@ -103,7 +104,6 @@ class IncomeService {
           ),
         );
       }
-
     } catch (error) {
       print("Error inside deleteIncome : ${error.toString()}");
       if (messenger != null && messenger.mounted) {
@@ -116,4 +116,19 @@ class IncomeService {
       }
     }
   }
+// calculate the income value
+Future<double> sumIncome() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  List<String> getIncome = pref.getStringList(_incomeKey) ?? [];
+
+  double total = 0.0;
+
+  for (String item in getIncome) {
+    Map<String, dynamic> map = jsonDecode(item);
+    Income income = Income.fromJSON(map);
+    total += income.amount;
+  }
+
+  return total;
+}
 }

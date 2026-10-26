@@ -60,34 +60,32 @@ class _TransactionPageState extends State<TransactionPage> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.3,
               width: double.infinity,
-        
-              child: ListView.builder(
-                shrinkWrap: true,
-             //   physics: NeverScrollableScrollPhysics(),
-                itemCount: widget.expenseList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Expense expense = widget.expenseList[index];
-                  print("--- ITEM CATEGORY --- : ${expense.category}");
-        
-                  return Dismissible(
-                    key: ValueKey(expense),
-                    direction: DismissDirection.startToEnd,
-                    onDismissed: (direction) {
-                      setState(() {
-                        widget.onDismissedExpense(expense);
-                      });
-                    },
-                    child: ExpenseCard(
-                      category: expense.category,
-        
-                      title: expense.title,
-                      description: expense.description,
-                      amount: expense.amount.toInt(),
-                      date: expense.date,
+              child: widget.expenseList.isEmpty
+                  ? const Center(child: Text("No expense yet"))
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: widget.expenseList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final Expense expense = widget.expenseList[index];
+
+                        return Dismissible(
+                          key: ValueKey(expense),
+                          direction: DismissDirection.startToEnd,
+                          onDismissed: (direction) {
+                            setState(() {
+                              widget.onDismissedExpense(expense);
+                            });
+                          },
+                          child: ExpenseCard(
+                            category: expense.category,
+                            title: expense.title,
+                            description: expense.description,
+                            amount: expense.amount.toInt(),
+                            date: expense.date,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             SizedBox(height: 5),
         
@@ -109,7 +107,10 @@ class _TransactionPageState extends State<TransactionPage> {
             SizedBox(
               height: MediaQuery.of(context).size.height*0.3,
                 width: double.infinity,
-              child: ListView.builder(
+                child: widget.incomeList.isEmpty
+                  ? const Center(child: Text("No income yet",
+                  ))
+                  : ListView.builder(
                 shrinkWrap: true,
                // physics: NeverScrollableScrollPhysics(),
                 itemCount: widget.incomeList.length,
@@ -135,7 +136,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 },
               ),
             ),
-            SizedBox(height: 20,),
+          /*  SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -151,7 +152,7 @@ class _TransactionPageState extends State<TransactionPage> {
                   ),
                 ],
               ),
-            ),
+            ),*/
             SizedBox(height: MediaQuery.of(context).padding.bottom*3,)
           ],
         ),

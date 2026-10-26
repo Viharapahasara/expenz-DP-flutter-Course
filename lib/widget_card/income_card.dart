@@ -1,6 +1,7 @@
 import 'package:expenz/constants/colors.dart';
 import 'package:expenz/modles/income_modle.dart';
 import 'package:flutter/material.dart';
+import 'package:chartify/chartify.dart';
 
 class IncomeCard extends StatelessWidget {
   final IncomeCategory category;
@@ -98,7 +99,7 @@ class IncomeCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text("-\$$amount",
+                          Text("\$$amount",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

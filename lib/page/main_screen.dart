@@ -2,7 +2,7 @@ import 'package:expenz/constants/colors.dart';
 import 'package:expenz/modles/expense_catagory_modle.dart';
 import 'package:expenz/modles/income_modle.dart';
 import 'package:expenz/page/Add_page/add_page.dart';
-import 'package:expenz/page/budget_page.dart';
+import 'package:expenz/page/budget_page/budget_page.dart';
 import 'package:expenz/page/home_page.dart';
 import 'package:expenz/page/profile_page.dart';
 import 'package:expenz/page/transcripton_page.dart';
@@ -120,18 +120,18 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildBody() {
     switch (selectedPos) {
-      case 0:
-        return const HomePage(); // 🟢 Case 0 = Home
+      case 3:
+        return  HomePage(expenseList: expenseList, incomeList: incomeList ,); // 🟢 Case 0 = Home
       case 1:
         return TransactionPage(expenseList: expenseList, onDismissedExpense: removeExpense, incomeList: incomeList, onDismissedIncome: removeIncome);
       case 2:
         return AddPage(currentPageNo: 0, addExpense: addNewExpense, addIncome: addNewIncome,); // 🟢 Case 2 = Add
-      case 3:
+      case 0:
         return const BudgetPage();
       case 4:
         return const ProfilePage();
       default:
-        return const HomePage();
+        return  HomePage(expenseList: expenseList, incomeList: incomeList,);
     }
   }
 

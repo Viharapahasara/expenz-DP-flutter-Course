@@ -126,4 +126,21 @@ class ExpenseSevice {
         );
     }}
   }
+
+  
+  // Calculate the total expense value cleanly
+Future<double> sumExpense() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  List<String> getExpenses = pref.getStringList(_expenseKey) ?? [];
+
+  double total = 0.0;
+
+  for (String item in getExpenses) {
+    Map<String, dynamic> map = jsonDecode(item);
+    Expense expense = Expense.fromJSON(map);
+    total += expense.amount;
+  }
+
+  return total;
+}
 }
