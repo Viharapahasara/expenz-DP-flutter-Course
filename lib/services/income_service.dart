@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:expenz/modles/expense_catagory_modle.dart';
 import 'package:expenz/modles/income_modle.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';

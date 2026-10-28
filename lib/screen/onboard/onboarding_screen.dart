@@ -37,8 +37,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     showDtailsPAge = index == 3;
                     if (showDtailsPAge) {
                       setState(() {});
-                    } else
+                    } else {
                       setState(() {});
+                    }
                   },
                   children: [
                     Fontpage(),

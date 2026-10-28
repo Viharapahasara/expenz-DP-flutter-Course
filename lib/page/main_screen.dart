@@ -31,24 +31,21 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       expenseList = loadedExpenses;
       print(expenseList.length);
-      print("${expenseList.toString()}");
+      print(expenseList.toString());
     });
   }
-  
 
   // Function to add a new Expense
   void addNewExpense(Expense newExpense) async {
-    
     await ExpenseSevice().saveExpenses(newExpense, context);
 
-    
     setState(() {
       expenseList.add(newExpense);
     });
   }
 
   //Function to frech Income data
-  void frechAllIncome () async {
+  void frechAllIncome() async {
     List<Income> loardIncome = await IncomeService().loardIncome();
     setState(() {
       incomeList = loardIncome;
@@ -57,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   //Function to add new Income
-  void addNewIncome (Income newIncome) async{
+  void addNewIncome(Income newIncome) async {
     await IncomeService().saveIncome(newIncome, context);
 
     setState(() {
@@ -66,11 +63,36 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<TabItem> tabItems = List.of([
-    TabItem(Icons.home, "Home", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
-    TabItem(Icons.list_rounded, "Records", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
-    TabItem(Icons.add, "Add", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
-    TabItem(Icons.rocket, "Budget", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
-    TabItem(Icons.person, "Profile", kMainColor, labelStyle: const TextStyle(fontWeight: FontWeight.bold)),
+    TabItem(
+      Icons.home,
+      "Home",
+      kMainColor,
+      labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+    ),
+    TabItem(
+      Icons.list_rounded,
+      "Records",
+      kMainColor,
+      labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+    ),
+    TabItem(
+      Icons.add,
+      "Add",
+      kMainColor,
+      labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+    ),
+    TabItem(
+      Icons.rocket,
+      "Budget",
+      kMainColor,
+      labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+    ),
+    TabItem(
+      Icons.person,
+      "Profile",
+      kMainColor,
+      labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+    ),
   ]);
 
   @override
@@ -78,7 +100,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _navigationController = CircularBottomNavigationController(selectedPos);
     fetchAllExpenses();
-    frechAllIncome(); 
+    frechAllIncome();
   }
 
   @override
@@ -88,7 +110,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   //Function to remove a expense
-  void removeExpense (Expense expense){
+  void removeExpense(Expense expense) {
     ExpenseSevice().deleteExpenses(expense.id, context);
     setState(() {
       expenseList.remove(expense);
@@ -103,16 +125,45 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  //  category total expense
+  Map<ExpenseCategory, double> calculateExpwnseCat(){
+    Map<ExpenseCategory, double> catrgoryETotal = {
+        ExpenseCategory.food : 0,
+        ExpenseCategory.health : 0,
+        ExpenseCategory.shopping : 0,
+        ExpenseCategory.subscription : 0,
+        ExpenseCategory.transport : 0,
+    };
+
+    for (Expense expence in expenseList){
+        catrgoryETotal[expence.category] =
+          (catrgoryETotal[expence.category] ?? 0) + expence.amount;
+    }
+    return catrgoryETotal;
+  }   
+
+    Map<IncomeCategory, double> calculateIncomeCat(){
+    Map<IncomeCategory, double> catrgoryITotal = {
+        IncomeCategory.Freelance : 0,
+        IncomeCategory.Passive : 0,
+        IncomeCategory.Salary : 0,
+        IncomeCategory.Sales : 0,
+    };
+
+    for (Income income in incomeList){
+        catrgoryITotal[income.catagory] =
+          (catrgoryITotal[income.catagory] ?? 0) + income.amount;
+    }
+    return catrgoryITotal;
+  }   
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: <Widget>[
           _buildBody(),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _buildBottomNav(),
-          ),
+          Align(alignment: Alignment.bottomCenter, child: _buildBottomNav()),
         ],
       ),
     );
@@ -121,17 +172,32 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildBody() {
     switch (selectedPos) {
       case 3:
-        return  HomePage(expenseList: expenseList, incomeList: incomeList ,); // 🟢 Case 0 = Home
+        return HomePage(
+          expenseList: expenseList,
+          incomeList: incomeList,
+        ); // 🟢 Case 0 = Home
       case 1:
-        return TransactionPage(expenseList: expenseList, onDismissedExpense: removeExpense, incomeList: incomeList, onDismissedIncome: removeIncome);
+        return TransactionPage(
+          expenseList: expenseList,
+          onDismissedExpense: removeExpense,
+          incomeList: incomeList,
+          onDismissedIncome: removeIncome,
+        );
       case 2:
-        return AddPage(currentPageNo: 0, addExpense: addNewExpense, addIncome: addNewIncome,); // 🟢 Case 2 = Add
+        return AddPage(
+          currentPageNo: 0,
+          addExpense: addNewExpense,
+          addIncome: addNewIncome,
+        ); // 🟢 Case 2 = Add
       case 0:
-        return const BudgetPage();
+        return BudgetPage(
+          expenseCatogery: calculateExpwnseCat(),
+          incomeCatogery: calculateIncomeCat(),
+        );
       case 4:
         return const ProfilePage();
       default:
-        return  HomePage(expenseList: expenseList, incomeList: incomeList,);
+        return HomePage(expenseList: expenseList, incomeList: incomeList);
     }
   }
 

@@ -21,6 +21,7 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   int currentPage = 0;
+  
 
   late final PageController _pageController;
 

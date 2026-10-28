@@ -36,6 +36,7 @@ class _UserdataScreenState extends State<UserdataScreen> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -65,6 +66,7 @@ class _UserdataScreenState extends State<UserdataScreen> {
                           if (value!.isEmpty) {
                             return "Please Enter Your Name";
                           }
+                          return null;
                         },
                         decoration: InputDecoration(
                           hintText: "Full Name",
@@ -85,6 +87,7 @@ class _UserdataScreenState extends State<UserdataScreen> {
                           if (value!.isEmpty) {
                             return "Please Enter Your Email";
                           }
+                          return null;
                         },
                         decoration: InputDecoration(
                           hintText: "email",
@@ -105,6 +108,7 @@ class _UserdataScreenState extends State<UserdataScreen> {
                           if (value!.isEmpty) {
                             return "Please Enter the valued password";
                           }
+                          return null;
                         },
                         obscureText: true,
                         decoration: InputDecoration(
@@ -125,6 +129,7 @@ class _UserdataScreenState extends State<UserdataScreen> {
                           if (value!.isEmpty) {
                             return "Please Enter the same Password";
                           }
+                          return null;
                         },
                         obscureText: true,
                         decoration: InputDecoration(
@@ -200,10 +205,10 @@ class _UserdataScreenState extends State<UserdataScreen> {
                             },
                           );
 
-                          print("$userName");  
-                          print("$email");
-                          print("$password");
-                          print("$comPassword");
+                          print(userName);  
+                          print(email);
+                          print(password);
+                          print(comPassword);
                         }
                       },
                     ),

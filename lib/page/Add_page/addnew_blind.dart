@@ -17,7 +17,7 @@ class AddnewBlind extends StatefulWidget {
   final void Function(dynamic) addExpense;
   final int page;
 
-  AddnewBlind({
+  const AddnewBlind({
     super.key,
     required this.bgColor,
     required this.item,

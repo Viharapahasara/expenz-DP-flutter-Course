@@ -127,9 +127,9 @@ class _TransactionPageState extends State<TransactionPage> {
                     },
                     child: IncomeCard(
                       category: income.catagory,
-                      title: income.title!,
+                      title: income.title,
                       description: income.description,
-                      amount: income.amount!.toInt(),
+                      amount: income.amount.toInt(),
                       date: income.date,
                     ),
                   );

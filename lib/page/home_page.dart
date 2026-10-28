@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
     try {
       Map<String, dynamic>? value = await UserService.getUserData();
 
-      if (value != null && mounted) {
+      if (mounted) {
         setState(() {
           // Use '??' to catch whether the key is "username" or "userName"
           username = value["username"] ?? value["userName"] ?? "Guest";
@@ -70,6 +70,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
 
   //to Expense List
