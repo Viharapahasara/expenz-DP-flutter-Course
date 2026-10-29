@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:expenz/constants/colors.dart';
+import 'package:expenz/page/profile_page/edit_profile_screen.dart';
 import 'package:expenz/page/profile_page/widget_card.dart';
 import 'package:expenz/screen/onboard/onboarding_screen.dart';
 import 'package:expenz/services/user_service.dart';
@@ -43,74 +44,28 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> showEditProfileDialog() async {
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    final TextEditingController nameController =
-        TextEditingController(text: username);
-    final TextEditingController emailController =
-        TextEditingController(text: email);
-
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) => AlertDialog(
-        title: const Text('Edit Profile'),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: nameController,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(labelText: 'Name'),
-                validator: (String? value) => value == null || value.trim().isEmpty
-                    ? 'Enter your name'
-                    : null,
-              ),
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (String? value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Enter your email';
-                  }
-                  if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-                      .hasMatch(value.trim())) {
-                    return 'Enter a valid email address';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
+  Future<void> navigateToEditProfile() async {
+    final bool? updated = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfileScreen(
+          initialUsername: username,
+          initialEmail: email,
+          initialImagePath: profileImagePath,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              if (!formKey.currentState!.validate()) return;
-              await UserService.updateProfile(
-                userName: nameController.text,
-                email: emailController.text,
-              );
-              if (!mounted) return;
-              setState(() {
-                username = nameController.text.trim();
-                email = emailController.text.trim();
-              });
-              if (dialogContext.mounted) Navigator.of(dialogContext).pop();
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
-    nameController.dispose();
-    emailController.dispose();
+
+    if (updated == true && mounted) {
+      await loadUserData();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile updated successfully!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   Future<void> chooseProfileImage() async {
@@ -168,9 +123,9 @@ class _ProfilePageState extends State<ProfilePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Name: $username'),
+            Text('Name: ${username.trim().isEmpty ? 'Guest' : username}'),
             const SizedBox(height: 12),
-            Text('Email: ${email.isEmpty ? 'Not provided' : email}'),
+            Text('Email: ${email.trim().isEmpty ? 'Not provided' : email}'),
           ],
         ),
         actions: [
@@ -198,22 +153,43 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           TextButton(
             onPressed: () async {
-              // Close the dialog
+              // 1. Close confirmation dialog
               Navigator.of(dialogContext).pop();
 
-              // Show a loading indicator while wiping data
+              // 2. Show non-dismissible loading indicator
               showDialog<void>(
                 context: context,
                 barrierDismissible: false,
-                builder: (_) => const Center(child: CircularProgressIndicator()),
+                builder: (_) => const PopScope(
+                  canPop: false,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
               );
 
-              // Wipe all local data
-              await UserService.logout();
+              try {
+                // 3. Perform full local storage wipe
+                await UserService.logout();
+              } catch (error) {
+                debugPrint('Logout failed: $error');
+                if (mounted) {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('An error occurred while logging out.'),
+                    ),
+                  );
+                }
+                return;
+              }
 
               if (!mounted) return;
 
-              // Remove the loading indicator and navigate to login
+              // 4. Pop the loading dialog from root navigator
+              Navigator.of(context, rootNavigator: true).pop();
+
+              // 5. Clear navigation stack and redirect to onboarding/login
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute<void>(
                   builder: (_) => const OnboardingScreen(),
@@ -221,7 +197,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 (Route<dynamic> route) => false,
               );
             },
-            child: const Text('Log out', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Log out',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -230,6 +209,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final String displayUsername =
+        username.trim().isEmpty ? 'Guest' : username;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -237,9 +219,8 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-          
               SizedBox(
-                height: MediaQuery.of(context).padding.top*2,
+                height: MediaQuery.of(context).padding.top * 2,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -268,49 +249,41 @@ class _ProfilePageState extends State<ProfilePage> {
                             : null,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "username",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: kGrey
-                                ),
-                              ),
-                            //  SizedBox(width: 10),
-                              Row(
-                                children: [
-                                 // SizedBox(width: 20),
-                                  SizedBox(
-                                    width: 210,
-                                    child: Text(
-                                      username,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: kBlack,
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "username",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: kGrey,
                                   ),
-                                ],
-                              ),
-                            ],
+                                ),
+                                Text(
+                                  displayUsername,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: kBlack,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           IconButton(
-                            onPressed: showEditProfileDialog,
-                            icon: Icon(
+                            onPressed: navigateToEditProfile,
+                            icon: const Icon(
                               Icons.mode_edit_outline,
                               size: 35,
                               color: kGrey,
@@ -319,8 +292,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                     ),
-          
-                    
                   ],
                 ),
               ),
@@ -331,7 +302,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: kLightGrey,
                 thickness: 2,
               ),
-          
               WidgetCard(
                 color: kMainColor,
                 title: 'My Profile',
@@ -342,9 +312,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: kLightGrey,
                 thickness: 2,
               ),
-          
-          
-              WidgetCard(
+              const WidgetCard(
                 color: kMainColor,
                 title: 'Settings',
                 icone: Icons.settings,
@@ -353,7 +321,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: kLightGrey,
                 thickness: 2,
               ),
-          
               WidgetCard(
                 color: kRed,
                 title: 'Logout',

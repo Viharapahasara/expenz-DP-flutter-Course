@@ -1,13 +1,12 @@
+import 'dart:io';
+
 import 'package:chartify/chartify.dart';
 import 'package:expenz/constants/colors.dart';
 import 'package:expenz/constants/constents.dart';
 import 'package:expenz/modles/expense_catagory_modle.dart';
 import 'package:expenz/modles/income_modle.dart';
-
-
 import 'package:expenz/services/expense_sevice.dart';
 import 'package:expenz/services/income_service.dart';
-
 import 'package:expenz/services/user_service.dart';
 import 'package:expenz/widget_card/expense_card.dart';
 import 'package:expenz/widget_card/income_card.dart';
@@ -27,21 +26,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   //store the user name
   String username = "";
+  String? profileImagePath;
   double totalIncome = 0.0;
   double totalExpense = 0.0;
 
   void loadTotalIncome() async {
     double value = await IncomeService().sumIncome();
-    setState(() {
-      totalIncome = value;
-    });
+    if (mounted) {
+      setState(() {
+        totalIncome = value;
+      });
+    }
   }
 
   void loardTotalExpense() async {
     double value = await ExpenseSevice().sumExpense();
-    setState(() {
-      totalExpense = value;
-    });
+    if (mounted) {
+      setState(() {
+        totalExpense = value;
+      });
+    }
   }
 
   @override
@@ -53,17 +57,19 @@ class _HomePageState extends State<HomePage> {
     loardTotalExpense();
   }
 
-  //  Safe method to load user data
+  // Safe method to load user data
   Future<void> loadUserData() async {
     try {
-      Map<String, dynamic>? value = await UserService.getUserData();
+      final Map<String, dynamic> value = await UserService.getUserData();
+      final String? imagePath = await UserService.getProfileImagePath();
 
       if (mounted) {
         setState(() {
           // Use '??' to catch whether the key is "username" or "userName"
           username = value["username"] ?? value["userName"] ?? "Guest";
+          profileImagePath = imagePath;
         });
-        debugPrint("User Name Loaded: $username");
+        debugPrint("User Name Loaded: $username, Image: $profileImagePath");
       }
     } catch (e) {
       debugPrint("Error loading user data: $e");
@@ -138,12 +144,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //to Expense List
+    final List<Expense> lastFive = widget.expenseList.reversed.take(3).toList();
 
-  //to Expense List
-   final List<Expense> lastFive =widget.expenseList.reversed.take(3).toList();
-    
     //to income List
-    final List<Income> lastFiveI =widget.incomeList.reversed.take(3).toList();
+    final List<Income> lastFiveI = widget.incomeList.reversed.take(3).toList();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -158,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                   height: MediaQuery.of(context).size.width * 0.7,
                   decoration: BoxDecoration(
                     color: kMainColor.withValues(alpha: 0.37),
-                    borderRadius: BorderRadius.horizontal(
+                    borderRadius: const BorderRadius.horizontal(
                       left: Radius.circular(30),
                       right: Radius.circular(30),
                     ),
@@ -179,15 +184,35 @@ class _HomePageState extends State<HomePage> {
                             width: 50,
                             height: 50,
                             decoration: BoxDecoration(
-                              color: kWhite,
-                              borderRadius: BorderRadius.circular(100),
+                              shape: BoxShape.circle,
                               border: Border.all(color: kMainColor, width: 2.0),
                             ),
-
-                            child: Icon(Icons.person, size: 30),
+                            child: CircleAvatar(
+                              radius: 23,
+                              backgroundColor: kWhite,
+                              backgroundImage: (profileImagePath != null &&
+                                      File(profileImagePath!).existsSync())
+                                  ? FileImage(File(profileImagePath!))
+                                  : null,
+                              child: (profileImagePath == null ||
+                                      !File(profileImagePath!).existsSync())
+                                  ? (username.trim().isNotEmpty &&
+                                          username.trim().toLowerCase() != "guest"
+                                      ? Text(
+                                          username.trim()[0].toUpperCase(),
+                                          style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                            color: kMainColor,
+                                          ),
+                                        )
+                                      : const Icon(Icons.person,
+                                          size: 28, color: kMainColor))
+                                  : null,
+                            ),
                           ),
 
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
 
                           Expanded(
                             child: Row(
@@ -196,22 +221,22 @@ class _HomePageState extends State<HomePage> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "Wellcome,",
+                                    const Text(
+                                      "Welcome,",
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
 
                                     Row(
                                       children: [
-                                        SizedBox(width: 10),
+                                        const SizedBox(width: 10),
                                         Text(
-                                          username,
+                                          username.isEmpty ? "Guest" : username,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -225,11 +250,11 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                 ),
 
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
 
                                 IconButton(
                                   onPressed: () {},
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.notifications,
                                     size: 35,
                                     color: kMainColor,
@@ -271,10 +296,10 @@ class _HomePageState extends State<HomePage> {
                 //profile image , Name  and notification icon
               ],
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 "Spend Frequency",
                 style: TextStyle(
@@ -284,8 +309,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "your life frequency",
                 style: TextStyle(
@@ -295,7 +320,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            SizedBox(height: 10,),
+            const SizedBox(height: 10),
 
             // Bar chart
             Padding(
@@ -305,18 +330,17 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   width: 500,
                   height: 360,
-                  decoration:BoxDecoration(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: kWhite,
-                     boxShadow: [
-                      
-                BoxShadow(
-                  color: kGrey.withValues(alpha: 0.2),
-                  offset: const Offset(0,4),
-                  spreadRadius: 2,
-                  blurRadius: 8,
-                      
-                )]
+                    boxShadow: [
+                      BoxShadow(
+                        color: kGrey.withValues(alpha: 0.2),
+                        offset: const Offset(0, 4),
+                        spreadRadius: 2,
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
                   child: BarChart(
                     data: _buildMonthlyChartData(),
@@ -330,10 +354,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 "Recent Transaction",
                 style: TextStyle(
@@ -344,10 +368,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
 
-             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "Expense",
                 style: TextStyle(
@@ -358,38 +382,33 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: SizedBox(
-                // height: MediaQuery.of(context).size.height * 0.3,
                 width: double.infinity,
-              
-                child:widget.expenseList.isEmpty
-                  ? const Center(child: Text("No expense yet"))
-                  : ListView.builder(
-                  //reverse: true,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: lastFive.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final Expense expense = lastFive[index];
-              
-                    return ExpenseCard(
-                      category: expense.category,
-                      title: expense.title,
-                      description: expense.description,
-                      amount: expense.amount.toInt(),
-                      date: expense.date,
-                    );
-                  },
-                ),
+                child: widget.expenseList.isEmpty
+                    ? const Center(child: Text("No expense yet"))
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: lastFive.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final Expense expense = lastFive[index];
+
+                          return ExpenseCard(
+                            category: expense.category,
+                            title: expense.title,
+                            description: expense.description,
+                            amount: expense.amount.toInt(),
+                            date: expense.date,
+                          );
+                        },
+                      ),
               ),
             ),
 
-            
-             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "Income",
                 style: TextStyle(
@@ -400,32 +419,31 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-           Padding(
-             padding: const EdgeInsets.symmetric(horizontal: 5),
-             child: SizedBox(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: SizedBox(
                 width: double.infinity,
-               // height: 400,
                 child: widget.incomeList.isEmpty
-                  ? const Center(child: Text("No income yet"))
-                  : ListView.builder(
-                    reverse: true,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: lastFiveI.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final Income income = lastFiveI[index];
-                
-                      return IncomeCard(
-                        category: income.catagory,
-                        title: income.title,
-                        description: income.description,
-                        amount: income.amount.toInt(),
-                        date: income.date,
-                      );
-                    },
-                  ),
+                    ? const Center(child: Text("No income yet"))
+                    : ListView.builder(
+                        reverse: true,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: lastFiveI.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final Income income = lastFiveI[index];
+
+                          return IncomeCard(
+                            category: income.catagory,
+                            title: income.title,
+                            description: income.description,
+                            amount: income.amount.toInt(),
+                            date: income.date,
+                          );
+                        },
+                      ),
               ),
-           ),
+            ),
 
             SizedBox(height: MediaQuery.of(context).padding.bottom * 6),
           ],
