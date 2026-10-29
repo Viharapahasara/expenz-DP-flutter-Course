@@ -51,6 +51,7 @@ class _BudgetPageState extends State<BudgetPage> {
           ),
         ),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
 
       body:

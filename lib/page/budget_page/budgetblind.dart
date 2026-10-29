@@ -6,7 +6,6 @@ import 'package:expenz/services/expense_sevice.dart';
 import 'package:expenz/services/income_service.dart';
 import 'package:flutter/material.dart';
 import 'package:chartify/chartify.dart';
-import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 
 class Budgetblind extends StatefulWidget {
   final Map<ExpenseCategory, double> expenseCatogery;

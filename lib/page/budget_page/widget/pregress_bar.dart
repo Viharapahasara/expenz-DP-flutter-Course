@@ -1,37 +1,35 @@
 import 'package:expenz/constants/colors.dart';
-import 'package:expenz/modles/expense_catagory_modle.dart';
-import 'package:expenz/modles/income_modle.dart';
 import 'package:flutter/material.dart';
-import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 
 class PregressBar extends StatelessWidget {
   final String title;
   final double value;
   final double total;
   final Color color;
+  final Duration animationDuration;
 
   const PregressBar({
     super.key,
-
     required this.title,
     required this.value,
     required this.total,
     required this.color,
+    this.animationDuration = const Duration(milliseconds: 1000),
   });
 
   @override
   Widget build(BuildContext context) {
-    double calculatedRatio = (total == 0) ? 0.0 : (value / total);
-    double safeRatio = calculatedRatio.clamp(0.0, 1.0);
+    final safeRatio = value.isFinite && total.isFinite && total > 0
+        ? (value / total).clamp(0.0, 1.0).toDouble()
+        : 0.0;
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(5.0),
       child: Container(
         width: double.infinity,
         height: 90,
         decoration: BoxDecoration(
           color: kWhite,
           borderRadius: BorderRadius.circular(20),
-
           boxShadow: [
             BoxShadow(
               color: kGrey.withValues(alpha: 0.2),
@@ -41,7 +39,6 @@ class PregressBar extends StatelessWidget {
             ),
           ],
         ),
-
         child: Column(
           children: [
             Padding(
@@ -62,7 +59,7 @@ class PregressBar extends StatelessWidget {
                           Icon(Icons.circle, color: color, size: 18),
                           Text(
                             title,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                             ),
@@ -71,10 +68,9 @@ class PregressBar extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   Text(
                     "\$$value",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: kBlack,
                       fontSize: 22,
                       fontWeight: FontWeight.w500,
@@ -83,26 +79,22 @@ class PregressBar extends StatelessWidget {
                 ],
               ),
             ),
-
-            SimpleAnimationProgressBar(
-              height: 15,
-              width: MediaQuery.of(context).size.width * 0.9,
-
-              backgroundColor: kLightGrey,
-              foregroundColor: color,
-              ratio: safeRatio,
-              direction: Axis.horizontal,
-              curve: Curves.fastLinearToSlowEaseIn,
-              duration: const Duration(seconds: 3),
-              borderRadius: BorderRadius.circular(10),
-              progressBarShadow: [
-                BoxShadow(
-                  color: kWhite,
-                  offset: const Offset(5.0, 5.0),
-                  blurRadius: 10.0,
-                  spreadRadius: 2.0,
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0.0, end: safeRatio),
+                duration: animationDuration,
+                curve: Curves.easeOutCubic,
+                builder: (BuildContext context, double animatedRatio, Widget? child) {
+                  return LinearProgressIndicator(
+                    value: animatedRatio,
+                    minHeight: 8,
+                    borderRadius: BorderRadius.circular(10),
+                    backgroundColor: kLightGrey,
+                    valueColor: AlwaysStoppedAnimation<Color>(color),
+                  );
+                },
+              ),
             ),
           ],
         ),

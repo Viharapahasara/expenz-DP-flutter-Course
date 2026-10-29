@@ -106,16 +106,31 @@ messenger.showSnackBar(
         return savedImage.path;
       }
 
+      /// Performs a complete data wipe and logs the user out.
+      ///
+      /// This clears ALL local data:
+      /// - User credentials (userName, email, password)
+      /// - Profile image file from the filesystem
+      /// - All expense records
+      /// - All income records
+      /// - Any other SharedPreferences data
       static Future<void> logout() async {
         final SharedPreferences pref = await SharedPreferences.getInstance();
+
+        // 1. Delete the profile image file from the filesystem
         final String? imagePath = pref.getString('profileImagePath');
         if (imagePath != null) {
-          final File image = File(imagePath);
-          if (await image.exists()) await image.delete();
+          try {
+            final File image = File(imagePath);
+            if (await image.exists()) await image.delete();
+          } catch (e) {
+            debugPrint('Failed to delete profile image: $e');
+          }
         }
-        await pref.remove("userName");
-        await pref.remove("email");
-        await pref.remove("password");
-        await pref.remove('profileImagePath');
+
+        // 2. Wipe ALL SharedPreferences data in one call.
+        //    This covers: userName, email, password, profileImagePath,
+        //    expenses, income, and any future keys.
+        await pref.clear();
       }
 }

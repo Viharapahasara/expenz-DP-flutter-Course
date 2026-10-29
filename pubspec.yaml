@@ -46,7 +46,6 @@ dependencies:
   intl: ^0.20.3
   chartify: ^1.0.2
   geekyants_flutter_gauges: ^1.0.4
-  simple_animation_progress_bar: ^1.9.2
   image_picker: ^1.2.4
   path_provider: ^2.1.6
 
@@ -60,6 +59,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  image_path: "assets/app_icons/android.png"
+  android: true
+  ios: true
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

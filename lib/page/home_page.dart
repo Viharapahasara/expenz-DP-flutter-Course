@@ -209,7 +209,7 @@ class _HomePageState extends State<HomePage> {
 
                                     Row(
                                       children: [
-                                        SizedBox(width: 20),
+                                        SizedBox(width: 10),
                                         Text(
                                           username,
                                           maxLines: 1,

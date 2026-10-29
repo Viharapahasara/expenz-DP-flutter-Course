@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:expenz/constants/colors.dart';
 import 'package:expenz/page/profile_page/widget_card.dart';
 import 'package:expenz/screen/onboard/onboarding_screen.dart';
-import 'package:expenz/services/app_theme_service.dart';
 import 'package:expenz/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -189,7 +188,9 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
         title: const Text('Log out?'),
-        content: const Text('Are you sure you want to log out?'),
+        content: const Text(
+          'Are you sure you want to log out?\nAll your local data will be permanently deleted.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
@@ -197,9 +198,22 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           TextButton(
             onPressed: () async {
+              // Close the dialog
               Navigator.of(dialogContext).pop();
+
+              // Show a loading indicator while wiping data
+              showDialog<void>(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(child: CircularProgressIndicator()),
+              );
+
+              // Wipe all local data
               await UserService.logout();
+
               if (!mounted) return;
+
+              // Remove the loading indicator and navigate to login
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute<void>(
                   builder: (_) => const OnboardingScreen(),
@@ -207,47 +221,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 (Route<dynamic> route) => false,
               );
             },
-            child: const Text('Log out'),
+            child: const Text('Log out', style: TextStyle(color: Colors.red)),
           ),
         ],
-      ),
-    );
-  }
-
-  void showThemeSettings() {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) => AnimatedBuilder(
-        animation: AppThemeService.instance,
-        builder: (BuildContext context, Widget? child) => AlertDialog(
-          title: const Text('Appearance'),
-          content: SegmentedButton<ThemeMode>(
-            segments: const [
-              ButtonSegment<ThemeMode>(
-                value: ThemeMode.system,
-                label: Text('System'),
-              ),
-              ButtonSegment<ThemeMode>(
-                value: ThemeMode.light,
-                label: Text('Light'),
-              ),
-              ButtonSegment<ThemeMode>(
-                value: ThemeMode.dark,
-                label: Text('Dark'),
-              ),
-            ],
-            selected: {AppThemeService.instance.themeMode},
-            onSelectionChanged: (Set<ThemeMode> modes) {
-              AppThemeService.instance.setThemeMode(modes.first);
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Done'),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -314,14 +290,17 @@ class _ProfilePageState extends State<ProfilePage> {
                               Row(
                                 children: [
                                  // SizedBox(width: 20),
-                                  Text(
-                                    username,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: kBlack,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
+                                  SizedBox(
+                                    width: 210,
+                                    child: Text(
+                                      username,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: kBlack,
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -330,7 +309,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           SizedBox(width: 10),
                           IconButton(
-                            onPressed: /*showEditProfileDialog*/ (){},
+                            onPressed: showEditProfileDialog,
                             icon: Icon(
                               Icons.mode_edit_outline,
                               size: 35,
@@ -369,7 +348,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: kMainColor,
                 title: 'Settings',
                 icone: Icons.settings,
-               // onTap: showThemeSettings,
               ),
               const Divider(
                 color: kLightGrey,

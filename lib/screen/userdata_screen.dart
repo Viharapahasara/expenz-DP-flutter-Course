@@ -26,6 +26,27 @@ class _UserdataScreenState extends State<UserdataScreen> {
   final TextEditingController _ConformPasswordController =
       TextEditingController();
 
+  /// Validates password strength.
+  /// Returns an error message if the password is weak, or null if strong.
+  String? _validatePasswordStrength(String password) {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!RegExp(r'[a-z]').hasMatch(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      return 'Password must contain at least one number';
+    }
+    if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(password)) {
+      return 'Password must contain at least one special character';
+    }
+    return null;
+  }
+
   @override
   void dispose() {
     _UserNameController.dispose();
@@ -83,14 +104,19 @@ class _UserdataScreenState extends State<UserdataScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
                         controller: _EmailController,
+                        keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value!.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return "Please Enter Your Email";
+                          }
+                          if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                              .hasMatch(value.trim())) {
+                            return 'Enter a valid email address';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
-                          hintText: "email",
+                          hintText: "Email",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -105,10 +131,10 @@ class _UserdataScreenState extends State<UserdataScreen> {
                       child: TextFormField(
                         controller: _PasswordController,
                         validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Please Enter the valued password";
+                          if (value == null || value.isEmpty) {
+                            return "Please Enter a Password";
                           }
-                          return null;
+                          return _validatePasswordStrength(value);
                         },
                         obscureText: true,
                         decoration: InputDecoration(
@@ -126,14 +152,17 @@ class _UserdataScreenState extends State<UserdataScreen> {
                       child: TextFormField(
                         controller: _ConformPasswordController,
                         validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Please Enter the same Password";
+                          if (value == null || value.isEmpty) {
+                            return "Please Confirm Your Password";
+                          }
+                          if (value != _PasswordController.text) {
+                            return "Passwords do not match";
                           }
                           return null;
                         },
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText: "Conform Password",
+                          hintText: "Confirm Password",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),

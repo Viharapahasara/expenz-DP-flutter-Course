@@ -1,21 +1,35 @@
 import 'package:expenz/screen/onboard/widget/wrapper.dart';
-import 'package:expenz/services/app_theme_service.dart';
 import 'package:expenz/services/user_service.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AppThemeService.instance.load();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final Future<bool> _startupFuture = _initializeApp();
+
+  Future<bool> _initializeApp() async {
+    try {
+      return await UserService.checkUserName();
+    } catch (error, stackTrace) {
+      debugPrint('App startup preferences failed: $error\n$stackTrace');
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-      future: UserService.checkUserName(),
+      future: _startupFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
@@ -24,27 +38,12 @@ class MyApp extends StatelessWidget {
         }
 
         final bool hasUserName = snapshot.data ?? false;
-        return AnimatedBuilder(
-          animation: AppThemeService.instance,
-          builder: (context, _) => MaterialApp(
-            debugShowCheckedModeBanner: false,
-            themeMode: AppThemeService.instance.themeMode,
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF7F3DFF),
-                brightness: Brightness.light,
-              ),
-              fontFamily: 'Inter',
-            ),
-            darkTheme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF7F3DFF),
-                brightness: Brightness.dark,
-              ),
-              fontFamily: 'Inter',
-            ),
-            home: Wrapper(showMAinScreen: hasUserName),
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            fontFamily: 'Inter',
           ),
+          home: Wrapper(showMAinScreen: hasUserName),
         );
       },
     );
