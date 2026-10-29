@@ -175,69 +175,74 @@ class _BudgetblindState extends State<Budgetblind> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        color: kWhite,
-        child: Column(
-          children: [
-            const SizedBox(height: 100),
-      
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: double.infinity,
-                height: 250,
-                decoration: BoxDecoration(
-                  color: kWhite,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: kGrey.withValues(alpha: 0.2),
-                      offset: const Offset(0, 4),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: PieChart(
-                    data: PieChartData(
-                      sections: sections(),
-                      holeRadius: 0.5,
-                      segmentGap: 3,
-                      cornerRadius: 4,
-                      enableShadows: true,
-                      showLabels: false,
-                      labelPosition: PieLabelPosition.outside,
-                      labelConnector: PieLabelConnector.elbow,
-                    ),
-                    centerWidget: Text(
-                      'Total\n${widget.isExpense ? totalExpense.toStringAsFixed(0) : totalIncome.toStringAsFixed(0)}',
-                      textAlign: TextAlign.center,
-                    ),
-                    tooltip: const TooltipConfig(enabled: true),
-                    animation: const ChartAnimation(
-                      duration: Duration(milliseconds: 1000),
-                      curve: Curves.easeOutCubic,
-                    ),
+    return Container(
+      color: kWhite,
+      child: Column(
+        children: [
+          const SizedBox(height: 100),
+    
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: double.infinity,
+              height: 250,
+              decoration: BoxDecoration(
+                color: kWhite,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: kGrey.withValues(alpha: 0.2),
+                    offset: const Offset(0, 4),
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: PieChart(
+                  data: PieChartData(
+                    sections: sections(),
+                    holeRadius: 0.5,
+                    segmentGap: 3,
+                    cornerRadius: 4,
+                    enableShadows: true,
+                    showLabels: false,
+                    labelPosition: PieLabelPosition.outside,
+                    labelConnector: PieLabelConnector.elbow,
+                  ),
+                  centerWidget: Text(
+                    'Total\n${widget.isExpense ? totalExpense.toStringAsFixed(0) : totalIncome.toStringAsFixed(0)}',
+                    textAlign: TextAlign.center,
+                  ),
+                  tooltip: const TooltipConfig(enabled: true),
+                  animation: const ChartAnimation(
+                    duration: Duration(milliseconds: 1000),
+                    curve: Curves.easeOutCubic,
                   ),
                 ),
               ),
             ),
-      
-            SingleChildScrollView(
-              child: SizedBox(
-                child: Column(
-                  children: _budgetProgressBars(),
-                ),
+          ),
+    
+          Container(
+            width: double.infinity,
+            height: 320,
+            child: SingleChildScrollView(
+              child: Column(
+                
+                
+                children: [
+                  ..._budgetProgressBars(),
+                  const SizedBox(height: 120),
+                ],
               ),
             ),
-
-            SizedBox(height: 120,)
-            
-          ],
-        ),
+          ),
+    
+          
+          
+        ],
       ),
     );
   }

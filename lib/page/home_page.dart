@@ -63,11 +63,77 @@ class _HomePageState extends State<HomePage> {
           // Use '??' to catch whether the key is "username" or "userName"
           username = value["username"] ?? value["userName"] ?? "Guest";
         });
-        print("User Name Loaded: $username");
+        debugPrint("User Name Loaded: $username");
       }
     } catch (e) {
-      print("Error loading user data: $e");
+      debugPrint("Error loading user data: $e");
     }
+  }
+
+  BarChartData _buildMonthlyChartData() {
+    final int currentYear = DateTime.now().year;
+    final List<DateTime> months = List<DateTime>.generate(
+      12,
+      (int index) => DateTime(currentYear, index + 1),
+    );
+    const List<String> monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    final List<String> categories = months
+        .map((DateTime month) => monthNames[month.month - 1])
+        .toList();
+    final List<double> monthlyIncome = months.map((DateTime month) {
+      return widget.incomeList
+          .where(
+            (Income income) =>
+                income.date.year == month.year &&
+                income.date.month == month.month,
+          )
+          .fold<double>(0, (double total, Income income) => total + income.amount);
+    }).toList();
+    final List<double> monthlyExpenses = months.map((DateTime month) {
+      return widget.expenseList
+          .where(
+            (Expense expense) =>
+                expense.date.year == month.year &&
+                expense.date.month == month.month,
+          )
+          .fold<double>(
+            0,
+            (double total, Expense expense) => total + expense.amount,
+          );
+    }).toList();
+
+    return BarChartData(
+      series: [
+        BarSeries.fromValues<double>(
+          name: 'Income',
+          values: monthlyIncome,
+          color: kGreen,
+        ),
+        BarSeries.fromValues<double>(
+          name: 'Expenses',
+          values: monthlyExpenses,
+          color: kRed,
+        ),
+      ],
+      xAxis: BarXAxisConfig(categories: categories),
+      yAxis: const BarYAxisConfig(min: 0),
+      grouping: BarGrouping.grouped,
+      direction: BarDirection.vertical,
+    );
   }
 
   @override
@@ -234,53 +300,26 @@ class _HomePageState extends State<HomePage> {
             // Bar chart
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Container(
-                width: double.infinity,
-                height: 400,
-                decoration:BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: kWhite,
-                   boxShadow: [
-                    
-              BoxShadow(
-                color: kGrey.withValues(alpha: 0.2),
-                offset: const Offset(0,4),
-                spreadRadius: 2,
-                blurRadius: 8,
-                    
-              )]
-                ),
-                child: SizedBox(
-                  height: 50,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  width: 500,
+                  height: 360,
+                  decoration:BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: kWhite,
+                     boxShadow: [
+                      
+                BoxShadow(
+                  color: kGrey.withValues(alpha: 0.2),
+                  offset: const Offset(0,4),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                      
+                )]
+                  ),
                   child: BarChart(
-                    data: BarChartData(
-                      series: [
-                        BarSeries.fromValues<double>(
-                          name: 'Income',
-                          values: const [45, 62, 55, 78, 52, 68],
-                          color: kGreen,
-                        ),
-                        BarSeries.fromValues<double>(
-                          name: 'Expenses',
-                          values: const [32, 48, 41, 52, 38, 55],
-                          color: const Color(0xFFEF4444),
-                        ),
-                      ],
-                      xAxis: BarXAxisConfig(
-                        categories: const [
-                          'Jan',
-                          'Feb',
-                          'Mar',
-                          'Apr',
-                          'May',
-                          'Jun',
-                        ],
-                      ),
-                      yAxis: const BarYAxisConfig(min: 0),
-                      grouping:
-                          BarGrouping.grouped, // or .stacked, .percentStacked
-                      direction: BarDirection.vertical, // or .horizontal
-                    ),
+                    data: _buildMonthlyChartData(),
                     tooltip: const TooltipConfig(enabled: true),
                     animation: const ChartAnimation(
                       duration: Duration(milliseconds: 800),

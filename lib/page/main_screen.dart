@@ -4,7 +4,7 @@ import 'package:expenz/modles/income_modle.dart';
 import 'package:expenz/page/Add_page/add_page.dart';
 import 'package:expenz/page/budget_page/budget_page.dart';
 import 'package:expenz/page/home_page.dart';
-import 'package:expenz/page/profile_page.dart';
+import 'package:expenz/page/profile_page/profile_page.dart';
 import 'package:expenz/page/transcripton_page.dart';
 import 'package:expenz/services/expense_sevice.dart';
 import 'package:expenz/services/income_service.dart';
@@ -171,7 +171,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildBody() {
     switch (selectedPos) {
-      case 3:
+      case 0:
         return HomePage(
           expenseList: expenseList,
           incomeList: incomeList,
@@ -189,7 +189,7 @@ class _MainScreenState extends State<MainScreen> {
           addExpense: addNewExpense,
           addIncome: addNewIncome,
         ); // 🟢 Case 2 = Add
-      case 0:
+      case 3:
         return BudgetPage(
           expenseCatogery: calculateExpwnseCat(),
           incomeCatogery: calculateIncomeCat(),

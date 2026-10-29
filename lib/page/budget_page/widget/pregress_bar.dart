@@ -59,7 +59,7 @@ class PregressBar extends StatelessWidget {
                       padding: const EdgeInsets.all(5),
                       child: Row(
                         children: [
-                          Icon(Icons.circle, color: Colors.orange, size: 18),
+                          Icon(Icons.circle, color: color, size: 18),
                           Text(
                             title,
                             style: TextStyle(
@@ -73,9 +73,9 @@ class PregressBar extends StatelessWidget {
                   ),
 
                   Text(
-                    "-\$$value",
+                    "\$$value",
                     style: TextStyle(
-                      color: kRed,
+                      color: kBlack,
                       fontSize: 22,
                       fontWeight: FontWeight.w500,
                     ),
